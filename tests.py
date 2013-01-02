@@ -25,8 +25,18 @@ class TestDrivelSetup(unittest.TestCase):
         self.assertEqual(self.drivel.get_redirect(), 'http://localhost')
         
     def test_get_scope(self):
-        self.assertEqual(self.drivel.get_scope(), 'https://www.googleapis.com/auth/drive')
+        self.assertEqual(self.drivel.get_scope(), 'https://www.googleapis.com/auth/drive')        
+
+class TestDrivelFiles(unittest.TestCase):
+    
+    def setUp(self):
+        self.files = drivel.Files()
+
+    def test_object(self):
+        self.assertTrue(isinstance(self.files, object))
         
-        
+    def test_init_variables(self):
+        self.assertTrue(isinstance(self.files.formats, dict))
+
 if __name__ == '__main__':
     unittest.main()

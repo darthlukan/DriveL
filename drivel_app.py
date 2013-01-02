@@ -3,7 +3,6 @@
 
 import os
 import pwd
-import pprint
 import httplib2
 import multiprocessing
 from subprocess import *
@@ -26,6 +25,14 @@ class Setup(object):
         # Redirect URI for installed apps
         self.REDIRECT_URI = 'http://localhost'
         
+        self.flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.OAUTH_SCOPE, self.REDIRECT_URI)
+        self.authorize_url = self.flow.step1_get_authorize_url()
+        #self.code = raw_input('Enter verification code: ').strip()
+        #self.credentials = self.flow.step2_exchange(self.code)
+        #self.http = httplib2.Http()
+        #self.http = credentials.authorize(self.http)
+        #self.drive_service = build('drive', 'v2', http=self.http)
+        
         # os.getlogin() is the preferred option, but is not working in Peppermint dev env.
         self.driveDir = '/home/' + pwd.getpwuid(os.getuid()).pw_name + '/Drive/'
         
@@ -44,29 +51,13 @@ class Setup(object):
         else:
             os.mkdir(self.driveDir)
             return self.driveDir
-
-class Login(object):
-    
-    def __init__(self):
-        
-        # TODO: Modify to match the code layout in my head. Also, tie to GUI.
-        # Run through the OAuth flow and retrieve credentials
-        self.flow = OAuth2WebServerFlow(CLIENT_ID, CLIENT_SECRET, OAUTH_SCOPE, REDIRECT_URI)
-        self.authorize_url = self.flow.step1_get_authorize_url()
-        print 'Go to the following link in your browser: ' + self.authorize_url
-        self.code = raw_input('Enter verification code: ').strip()
-        self.credentials = self.flow.step2_exchange(self.code)
-        
-        # Create an httplib2.Http object and authorize it with our credentials
-        self.http = httplib2.Http()
-        self.http = credentials.authorize(self.http)
-
-        self.drive_service = build('drive', 'v2', http=self.http)
         
 class Files(object):
     
     def __init__(self):
-        self.types = {'': ''}
+        self.formats = {'images': ['*.png', '*.jpg', '*.jpeg', '*.gif', '*.raw', '*.svg'],
+                        'docs': ['*.doc', '*.docx', '*.txt', '*.log', '*.odt', '*.org', 
+                                 '*.xls', '*.xlsx', '*.ods', '*.pdf']}
     
     def get_file(self, FILE):
         pass
