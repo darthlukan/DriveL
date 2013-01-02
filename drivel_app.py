@@ -6,6 +6,7 @@ import pwd
 import pprint
 import httplib2
 import multiprocessing
+from subprocess import *
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
 from oauth2client.client import OAuth2WebServerFlow
@@ -23,16 +24,10 @@ class Setup(object):
         self.OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
 
         # Redirect URI for installed apps
-        self.REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
+        self.REDIRECT_URI = 'http://localhost'
         
         # os.getlogin() is the preferred option, but is not working in Peppermint dev env.
         self.driveDir = '/home/' + pwd.getpwuid(os.getuid()).pw_name + '/Drive/'
-        
-        # Create an httplib2.Http object and authorize it with our credentials
-        self.http = httplib2.Http()
-        self.http = credentials.authorize(self.http)
-
-        self.drive_service = build('drive', 'v2', http=self.http)
         
     def get_scope(self):
         return self.OAUTH_SCOPE
@@ -53,6 +48,7 @@ class Setup(object):
 class Login(object):
     
     def __init__(self):
+        
         # TODO: Modify to match the code layout in my head. Also, tie to GUI.
         # Run through the OAuth flow and retrieve credentials
         self.flow = OAuth2WebServerFlow(CLIENT_ID, CLIENT_SECRET, OAUTH_SCOPE, REDIRECT_URI)
@@ -60,40 +56,50 @@ class Login(object):
         print 'Go to the following link in your browser: ' + self.authorize_url
         self.code = raw_input('Enter verification code: ').strip()
         self.credentials = self.flow.step2_exchange(self.code)
+        
+        # Create an httplib2.Http object and authorize it with our credentials
+        self.http = httplib2.Http()
+        self.http = credentials.authorize(self.http)
 
+        self.drive_service = build('drive', 'v2', http=self.http)
+        
 class Files(object):
     
     def __init__(self):
         self.types = {'': ''}
     
-    def get_file(self):
+    def get_file(self, FILE):
         pass
     
     def get_list(self):
         pass
     
-    def insert(self):
+    def test_file(self, FILE):
+        pass
+    
+    def insert(self, FILE):
         # Insert a file (From quickstart)
         # TODO: This is meant to be gleaned from the GUI.
-        media_body = MediaFileUpload(FILENAME, mimetype='text/plain', resumable=True)
-        body = {
-            'title': 'My document',
-            'description': 'A test document',
-            'mimeType': 'text/plain'
-        }
+        #media_body = MediaFileUpload(FILENAME, mimetype='text/plain', resumable=True)
+        #body = {
+        #    'title': 'My document',
+        #    'description': 'A test document',
+        #    'mimeType': 'text/plain'
+        #}
         
-        file = drive_service.files().insert(body=body, media_body=media_body).execute()
+        #file = drive_service.files().insert(body=body, media_body=media_body).execute()
+        pass                        
         
-    def copy(self):
+    def copy(self, FILE):
         pass
     
-    def remove(self):
+    def remove(self, FILE):
         pass
     
-    def restore(self):
+    def restore(self, FILE):
         pass
     
-    def update(self):
+    def update(self, FILE):
         pass
 
 class DriveApp(object):
